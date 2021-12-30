@@ -1,89 +1,31 @@
-const path = require('path');
-const fs = require('fs');
-
 const express = require('express');
+const morgan = require('morgan');
 
-const { writeFile } = require('./modules/writeFile');
+const { router: tourRouter } = require('./routes/tourRoutes');
+const { router: userRouter } = require('./routes/userRoutes');
 
 const app = express();
-const PORT = 8000;
 
-//This middleware is very important in dealing with req body Content-type: application/json
+// 1) MIDDLEWARE
+app.use(morgan('dev'));
 app.use(express.json());
 
-const tours = JSON.parse(
-  fs.readFileSync(path.resolve('dev-data', 'data', 'tours-simple.json'))
-);
+app.use((req, res, next) => {
+  console.log('This is the middleware👋');
 
-app.get('/api/v1/tours', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
+  next();
 });
 
-app.get(`/api/v1/tours/:id`, (req, res) => {
-  const id = +req.params.id;
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: 'Invalid ID',
-    });
-  }
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
 
-  const tourIndex = tours.findIndex((items) => items.id === +req.params.id);
-  const tour = tours[tourIndex];
-
-  res.status(200).json({
-    status: 'success',
-    data: { tour },
-  });
+  next();
 });
 
-app.post('/api/v1/tours', (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = { id: newId, ...req.body };
+// 3) ROUTES
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
-  tours.push(newTour);
-
-  writeFile(res, tours, newTour);
-});
-
-app.patch('/api/v1/tours/:id', (req, res) => {
-  const id = req.params.id * 1;
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  const tour = tours.find((tour) => tour.id === id);
-  const updatedTour = { ...tour, ...req.body };
-  tours[id] = updatedTour;
-
-  writeFile(res, tours, updatedTour);
-});
-
-app.delete('/api/v1/tours/:id', (req, res) => {
-  const id = req.params.id * 1;
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  const tour = tours.find((tour) => tour.id === id);
-  const updatedTour = { ...tour, ...req.body };
-  tours[id] = updatedTour;
-
-  writeFile(res, tours, updatedTour);
-});
-
-app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}`);
-});
+module.exports = {
+  app,
+};
