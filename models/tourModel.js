@@ -42,6 +42,13 @@ const tourSchema = new mongoose.Schema(
     },
     priceDiscount: {
       type: Number,
+      validate: {
+        validator: function (val) {
+          // this only points to current doc on NEW document creation
+          return this.price > val;
+        },
+        message: 'Discount price ({VALUE}) should be below the regular price',
+      },
     },
     summary: {
       type: String,
@@ -74,6 +81,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// virtual properties
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });

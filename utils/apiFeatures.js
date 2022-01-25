@@ -4,6 +4,7 @@ class APIFeatures {
     this.queryString = queryString;
   }
 
+  // 1) FILTERING
   filter() {
     const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
@@ -18,6 +19,7 @@ class APIFeatures {
     return this;
   }
 
+  // 2) SORTING
   sort() {
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(',').join(' ');
@@ -29,6 +31,7 @@ class APIFeatures {
     return this;
   }
 
+  // 3) FIELDING
   limitFields() {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(',').join(' ');
@@ -40,6 +43,7 @@ class APIFeatures {
     return this;
   }
 
+  // 4) PAGINATION
   paginate() {
     const page = +this.queryString.page || 1;
     const limit = this.queryString.limit * 1 || 100;
