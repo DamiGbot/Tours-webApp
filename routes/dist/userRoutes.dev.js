@@ -4,7 +4,8 @@ var express = require('express');
 
 var _require = require('../controllers/authController'),
     signup = _require.signup,
-    login = _require.login;
+    login = _require.login,
+    forgotPassword = _require.forgotPassword;
 
 var _require2 = require('../controllers/userController'),
     getAllUsers = _require2.getAllUsers,
@@ -16,7 +17,8 @@ var _require2 = require('../controllers/userController'),
 var router = express.Router(); // user login, reset password, signup
 
 router.post('/signup', signup);
-router.post('/login', login); // Administrator route
+router.post('/login', login);
+router.post('/forgotPassword', forgotPassword); // Administrator route
 
 router.route('/').get(getAllUsers).post(createdUser);
 router.route('/:id').get(getUser).patch(updateUser)["delete"](deleteUser);

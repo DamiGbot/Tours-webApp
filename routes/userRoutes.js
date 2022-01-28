@@ -1,6 +1,10 @@
 const express = require('express');
 
-const { signup, login } = require('../controllers/authController');
+const {
+  signup,
+  login,
+  forgotPassword,
+} = require('../controllers/authController');
 
 const {
   getAllUsers,
@@ -15,6 +19,8 @@ const router = express.Router();
 
 router.post('/signup', signup);
 router.post('/login', login);
+
+router.post('/forgotPassword', forgotPassword);
 
 // Administrator route
 router.route('/').get(getAllUsers).post(createdUser);

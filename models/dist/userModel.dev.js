@@ -1,5 +1,7 @@
 "use strict";
 
+var crypto = require('crypto');
+
 var mongoose = require('mongoose');
 
 var validator = require('validator');
@@ -53,7 +55,9 @@ var userSchema = new mongoose.Schema({
       message: 'Passwords are not the same!'
     }
   },
-  passwordChangedAt: Date
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordExpiresIn: Date
 });
 userSchema.pre('save', function _callee(next) {
   return regeneratorRuntime.async(function _callee$(_context) {
@@ -111,6 +115,13 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
 
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  var resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.passwordExpiresIn = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 var User = mongoose.model('User', userSchema);

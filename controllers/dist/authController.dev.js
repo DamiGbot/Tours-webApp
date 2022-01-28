@@ -183,3 +183,54 @@ exports.restrictTo = function () {
     next();
   };
 };
+
+exports.forgotPassword = function _callee4(req, res, next) {
+  var email, user, resetToken;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          email = req.body.email;
+
+          if (email) {
+            _context4.next = 3;
+            break;
+          }
+
+          return _context4.abrupt("return", next(new AppError('Please input a valid email.', 400)));
+
+        case 3:
+          _context4.next = 5;
+          return regeneratorRuntime.awrap(User.findOne({
+            email: email
+          }));
+
+        case 5:
+          user = _context4.sent;
+
+          if (user) {
+            _context4.next = 8;
+            break;
+          }
+
+          return _context4.abrupt("return", next(new AppError('There is no user with this email.'), 404));
+
+        case 8:
+          resetToken = user.createPasswordResetToken();
+          _context4.next = 11;
+          return regeneratorRuntime.awrap(user.save({
+            validateBeforeSave: false
+          }));
+
+        case 11:
+          res.status(200).json({
+            resetToken: resetToken
+          });
+
+        case 12:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  });
+};
