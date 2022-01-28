@@ -4,6 +4,7 @@ const {
   signup,
   login,
   forgotPassword,
+  resetPassword,
 } = require('../controllers/authController');
 
 const {
@@ -21,6 +22,7 @@ router.post('/signup', signup);
 router.post('/login', login);
 
 router.post('/forgotPassword', forgotPassword);
+router.patch('/resetPassword/:token', resetPassword);
 
 // Administrator route
 router.route('/').get(getAllUsers).post(createdUser);

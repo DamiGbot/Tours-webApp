@@ -12,6 +12,8 @@ var AppError = require('../utils/appError');
 
 var catchAsync = require('../utils/catchAsync');
 
+var sendEmail = require('../utils/email.js');
+
 var signToken = function signToken(id) {
   return jwt.sign({
     id: id
@@ -185,7 +187,7 @@ exports.restrictTo = function () {
 };
 
 exports.forgotPassword = function _callee4(req, res, next) {
-  var email, user, resetToken;
+  var email, user, resetToken, resetUrl, message;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
@@ -223,14 +225,42 @@ exports.forgotPassword = function _callee4(req, res, next) {
           }));
 
         case 11:
+          resetUrl = "".concat(req.protocol, "://").concat(req.get('host'), "/api/v1/users/resetPassword/").concat(resetToken);
+          message = "Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ".concat(resetUrl, ".\nIf you didn't forget your password, please ignore this email!");
+          _context4.prev = 13;
+          _context4.next = 16;
+          return regeneratorRuntime.awrap(sendEmail({
+            email: email,
+            subject: 'your password reset token (valid for 10 mins)',
+            message: message
+          }));
+
+        case 16:
+          _context4.next = 24;
+          break;
+
+        case 18:
+          _context4.prev = 18;
+          _context4.t0 = _context4["catch"](13);
+          user.passwordResetToken = undefined;
+          user.passwordResetExpires = undefined;
+          user.save({
+            validateBeforeSave: false
+          });
+          return _context4.abrupt("return", next(new AppError('There was an error sending the email. Try again later ')));
+
+        case 24:
           res.status(200).json({
-            resetToken: resetToken
+            status: 'success',
+            message: 'Token sent to email'
           });
 
-        case 12:
+        case 25:
         case "end":
           return _context4.stop();
       }
     }
-  });
+  }, null, null, [[13, 18]]);
 };
+
+exports.resetPassword = function (req, res, next) {};
