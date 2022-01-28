@@ -57,7 +57,7 @@ var userSchema = new mongoose.Schema({
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
-  passwordExpiresIn: Date
+  passwordResetExpires: Date
 });
 userSchema.pre('save', function _callee(next) {
   return regeneratorRuntime.async(function _callee$(_context) {
@@ -107,6 +107,12 @@ userSchema.methods.correctPassword = function _callee2(candidatePassword, userPa
   });
 };
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     var changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
@@ -120,7 +126,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 userSchema.methods.createPasswordResetToken = function () {
   var resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-  this.passwordExpiresIn = Date.now() + 10 * 60 * 1000;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
 

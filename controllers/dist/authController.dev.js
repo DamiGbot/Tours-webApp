@@ -1,5 +1,7 @@
 "use strict";
 
+var crypto = require('crypto');
+
 var _require = require('util'),
     promisify = _require.promisify;
 
@@ -263,4 +265,51 @@ exports.forgotPassword = function _callee4(req, res, next) {
   }, null, null, [[13, 18]]);
 };
 
-exports.resetPassword = function (req, res, next) {};
+exports.resetPassword = catchAsync(function _callee5(req, res, next) {
+  var hashedToken, user, token;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+          _context5.next = 3;
+          return regeneratorRuntime.awrap(User.findOne({
+            passwordResetToken: hashedToken,
+            passwordResetExpires: {
+              $gt: Date.now()
+            }
+          }));
+
+        case 3:
+          user = _context5.sent;
+          console.log(Date.now(), user);
+
+          if (user) {
+            _context5.next = 7;
+            break;
+          }
+
+          return _context5.abrupt("return", next(new AppError('The token is invalid or has expired', 400)));
+
+        case 7:
+          user.password = req.body.password;
+          user.passwordConfirm = req.body.passwordConfirm;
+          user.passwordResetToken = undefined;
+          user.passwordResetExpires = undefined;
+          _context5.next = 13;
+          return regeneratorRuntime.awrap(user.save());
+
+        case 13:
+          token = signToken(user._id);
+          res.status(200).json({
+            status: 'success',
+            token: token
+          });
+
+        case 15:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  });
+});
