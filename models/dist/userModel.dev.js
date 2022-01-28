@@ -31,6 +31,11 @@ var userSchema = new mongoose.Schema({
   photo: {
     type: String
   },
+  role: {
+    type: String,
+    "enum": ['user', 'guide', 'lead-guide', 'admin'],
+    "default": 'user'
+  },
   password: {
     type: String,
     trim: true,
@@ -47,7 +52,8 @@ var userSchema = new mongoose.Schema({
       },
       message: 'Passwords are not the same!'
     }
-  }
+  },
+  passwordChangedAt: Date
 });
 userSchema.pre('save', function _callee(next) {
   return regeneratorRuntime.async(function _callee$(_context) {
@@ -95,6 +101,16 @@ userSchema.methods.correctPassword = function _callee2(candidatePassword, userPa
       }
     }
   });
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    var changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return JWTTimestamp < changedTimestamp;
+  } // False means NOT changed
+
+
+  return false;
 };
 
 var User = mongoose.model('User', userSchema);

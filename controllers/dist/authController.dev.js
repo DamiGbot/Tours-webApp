@@ -31,7 +31,9 @@ exports.signup = catchAsync(function _callee(req, res, next) {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
-            passwordConfirm: req.body.passwordConfirm
+            passwordConfirm: req.body.passwordConfirm,
+            passwordChangedAt: req.body.passwordChangedAt,
+            role: req.body.role
           }));
 
         case 2:
@@ -112,7 +114,7 @@ exports.login = catchAsync(function _callee2(req, res, next) {
   });
 });
 exports.protect = catchAsync(function _callee3(req, res, next) {
-  var token, decoded, freshUser;
+  var token, decoded, currentUser;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
@@ -139,14 +141,45 @@ exports.protect = catchAsync(function _callee3(req, res, next) {
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
         case 8:
-          freshUser = _context3.sent;
-          // 4) Check if user changed password after the token was issued
+          currentUser = _context3.sent;
+
+          if (currentUser) {
+            _context3.next = 11;
+            break;
+          }
+
+          return _context3.abrupt("return", next(new AppError('The user belonging to this token does no longer exist.', 401)));
+
+        case 11:
+          if (!currentUser.changedPasswordAfter(decoded.iat)) {
+            _context3.next = 13;
+            break;
+          }
+
+          return _context3.abrupt("return", next(new AppError('User recently changed password! Please log in again.', 401)));
+
+        case 13:
+          req.user = currentUser;
           next();
 
-        case 10:
+        case 15:
         case "end":
           return _context3.stop();
       }
     }
   });
 });
+
+exports.restrictTo = function () {
+  for (var _len = arguments.length, roles = new Array(_len), _key = 0; _key < _len; _key++) {
+    roles[_key] = arguments[_key];
+  }
+
+  return function (req, res, next) {
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('You do not have permission to perform this action', 403));
+    }
+
+    next();
+  };
+};

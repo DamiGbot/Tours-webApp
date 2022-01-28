@@ -3,7 +3,8 @@
 var express = require('express');
 
 var _require = require('../controllers/authController'),
-    protect = _require.protect;
+    protect = _require.protect,
+    restrictTo = _require.restrictTo;
 
 var _require2 = require('../controllers/tourControllers'),
     getAllTours = _require2.getAllTours,
@@ -20,7 +21,7 @@ router.route('/tour-stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getBusyMonth);
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 router.route('/').get(protect, getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(updateTour)["delete"](deleteTour);
+router.route('/:id').get(getTour).patch(updateTour)["delete"](protect, restrictTo('admin', 'lead-guide'), deleteTour);
 module.exports = {
   router: router
 };
