@@ -5,6 +5,8 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  updatePassword,
+  protect,
 } = require('../controllers/authController');
 
 const {
@@ -23,6 +25,8 @@ router.post('/login', login);
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
+
+router.patch('/updateMyPassword', protect, updatePassword);
 
 // Administrator route
 router.route('/').get(getAllUsers).post(createdUser);

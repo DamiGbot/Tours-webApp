@@ -87,6 +87,11 @@ userSchema.pre('save', function _callee(next) {
     }
   }, null, this);
 });
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 
 userSchema.methods.correctPassword = function _callee2(candidatePassword, userPassword) {
   return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -106,12 +111,6 @@ userSchema.methods.correctPassword = function _callee2(candidatePassword, userPa
     }
   });
 };
-
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {

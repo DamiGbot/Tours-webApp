@@ -24,8 +24,19 @@ var signToken = function signToken(id) {
   });
 };
 
+var createSendToken = function createSendToken(user, statusCode, res) {
+  var token = signToken(user._id);
+  res.status(statusCode).json({
+    status: 'success',
+    token: token,
+    data: {
+      user: user
+    }
+  });
+};
+
 exports.signup = catchAsync(function _callee(req, res, next) {
-  var newUser, token;
+  var newUser;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -42,16 +53,9 @@ exports.signup = catchAsync(function _callee(req, res, next) {
 
         case 2:
           newUser = _context.sent;
-          token = signToken(newUser._id);
-          res.status(201).json({
-            status: 'success',
-            token: token,
-            data: {
-              user: newUser
-            }
-          });
+          createSendToken(newUser, 201, res);
 
-        case 5:
+        case 4:
         case "end":
           return _context.stop();
       }
@@ -59,7 +63,7 @@ exports.signup = catchAsync(function _callee(req, res, next) {
   });
 });
 exports.login = catchAsync(function _callee2(req, res, next) {
-  var _req$body, email, password, user, token;
+  var _req$body, email, password, user;
 
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
@@ -104,13 +108,9 @@ exports.login = catchAsync(function _callee2(req, res, next) {
           return _context2.abrupt("return", next(new AppError('Invalid error or password', 401)));
 
         case 13:
-          token = signToken(user._id);
-          res.status(200).json({
-            status: 'success',
-            token: token
-          });
+          createSendToken(user, 200, res);
 
-        case 15:
+        case 14:
         case "end":
           return _context2.stop();
       }
@@ -266,7 +266,7 @@ exports.forgotPassword = function _callee4(req, res, next) {
 };
 
 exports.resetPassword = catchAsync(function _callee5(req, res, next) {
-  var hashedToken, user, token;
+  var hashedToken, user;
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -300,15 +300,61 @@ exports.resetPassword = catchAsync(function _callee5(req, res, next) {
           return regeneratorRuntime.awrap(user.save());
 
         case 13:
-          token = signToken(user._id);
-          res.status(200).json({
-            status: 'success',
-            token: token
-          });
+          createSendToken(user, 200, res);
+
+        case 14:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  });
+});
+exports.updatePassword = catchAsync(function _callee6(req, res, next) {
+  var user, passwordCurrent;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.next = 2;
+          return regeneratorRuntime.awrap(User.findById({
+            _id: req.user._id
+          }).select('password'));
+
+        case 2:
+          user = _context6.sent;
+          passwordCurrent = req.body.passwordCurrent;
+
+          if (passwordCurrent) {
+            _context6.next = 6;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError('Please enter a valid password', 400)));
+
+        case 6:
+          _context6.next = 8;
+          return regeneratorRuntime.awrap(user.correctPassword(passwordCurrent, user.password));
+
+        case 8:
+          if (_context6.sent) {
+            _context6.next = 10;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError('Your password is wrong', 401)));
+
+        case 10:
+          user.password = req.body.password;
+          user.passwordConfirm = req.body.passwordConfirm;
+          _context6.next = 14;
+          return regeneratorRuntime.awrap(user.save());
+
+        case 14:
+          createSendToken(user, 200, res);
 
         case 15:
         case "end":
-          return _context5.stop();
+          return _context6.stop();
       }
     }
   });
