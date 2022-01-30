@@ -12,6 +12,8 @@ var mongoSanitize = require('express-mongo-sanitize');
 
 var xss = require('xss-clean');
 
+var hpp = require('hpp');
+
 var _require = require('./routes/tourRoutes'),
     tourRouter = _require.router;
 
@@ -45,7 +47,11 @@ app.use(express.json({
 
 app.use(mongoSanitize()); // Data sanitization against XSS
 
-app.use(xss()); // Serving static files
+app.use(xss()); // Prevent parameter pollution
+
+app.use(hpp({
+  whitelist: ['duration', 'ratingsAverage', 'ratingsQuantity', 'maxGroupSize', 'difficulty', 'price']
+})); // Serving static files
 
 app.use(express["static"]("".concat(__dirname, "/public"))); // Test middleware
 
