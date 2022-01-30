@@ -8,6 +8,10 @@ var rateLimit = require('express-rate-limit');
 
 var helmet = require('helmet');
 
+var mongoSanitize = require('express-mongo-sanitize');
+
+var xss = require('xss-clean');
+
 var _require = require('./routes/tourRoutes'),
     tourRouter = _require.router;
 
@@ -37,7 +41,11 @@ app.use('/api', limiter); // Body parser, reading data from body into req.body
 
 app.use(express.json({
   limit: '10kb'
-})); // Serving static files
+})); // Data sanitization against noSQL query injection
+
+app.use(mongoSanitize()); // Data sanitization against XSS
+
+app.use(xss()); // Serving static files
 
 app.use(express["static"]("".concat(__dirname, "/public"))); // Test middleware
 
