@@ -32,6 +32,7 @@ var getAllUsers = catchAsync(function _callee(req, res, next) {
           users = _context.sent;
           res.status(200).json({
             status: 'success',
+            results: users.length,
             data: {
               users: users
             }
@@ -111,11 +112,35 @@ var updateMe = catchAsync(function _callee2(req, res, next) {
     }
   });
 });
+var deleteMe = catchAsync(function _callee3(req, res, next) {
+  return regeneratorRuntime.async(function _callee3$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.next = 2;
+          return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user._id, {
+            active: false
+          }));
+
+        case 2:
+          res.status(204).json({
+            status: 'success',
+            data: null
+          });
+
+        case 3:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  });
+});
 module.exports = {
   getAllUsers: getAllUsers,
   createdUser: createdUser,
   getUser: getUser,
   updateUser: updateUser,
   deleteUser: deleteUser,
-  updateMe: updateMe
+  updateMe: updateMe,
+  deleteMe: deleteMe
 };
