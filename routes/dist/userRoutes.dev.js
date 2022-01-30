@@ -15,7 +15,8 @@ var _require2 = require('../controllers/userController'),
     getUser = _require2.getUser,
     createdUser = _require2.createdUser,
     updateUser = _require2.updateUser,
-    deleteUser = _require2.deleteUser;
+    deleteUser = _require2.deleteUser,
+    updateMe = _require2.updateMe;
 
 var router = express.Router(); // user login, reset password, signup
 
@@ -23,7 +24,8 @@ router.post('/signup', signup);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
-router.patch('/updateMyPassword', protect, updatePassword); // Administrator route
+router.patch('/updateMyPassword', protect, updatePassword);
+router.patch('/updateMe', protect, updateMe); // Administrator route
 
 router.route('/').get(getAllUsers).post(createdUser);
 router.route('/:id').get(getUser).patch(updateUser)["delete"](deleteUser);
