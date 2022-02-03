@@ -30,9 +30,7 @@ const main = async () => {
 
 main();
 
-const tours = JSON.parse(
-  fs.readFileSync(path.resolve('tours-simple.json'), 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(path.resolve('tours.json'), 'utf-8'));
 
 const importData = async () => {
   try {
