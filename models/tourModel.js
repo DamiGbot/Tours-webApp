@@ -116,6 +116,13 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+// Populate Virtuals
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  localField: '_id',
+  foreignField: 'tour',
+});
 // We need to use the regular function because the arrow function doesn't get the this keyword and we need it to point to the current document
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() - used to manipulate documents that are been saved
