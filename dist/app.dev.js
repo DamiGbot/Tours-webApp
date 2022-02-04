@@ -20,6 +20,8 @@ var _require = require('./routes/tourRoutes'),
 var _require2 = require('./routes/userRoutes'),
     userRouter = _require2.router;
 
+var reviewRoute = require('./routes/reviewRoute');
+
 var AppError = require('./utils/appError');
 
 var globalErrorHandler = require('./controllers/errorController');
@@ -62,6 +64,7 @@ app.use(function (req, res, next) {
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/review', reviewRoute);
 app.all('*', function (req, res, next) {
   var err = new AppError("Can't find ".concat(req.originalUrl, " on this server!"), 404);
   next(err);
