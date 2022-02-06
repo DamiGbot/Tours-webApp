@@ -7,15 +7,19 @@ var catchAsync = require('../utils/catchAsync');
 var AppError = require('../utils/appError');
 
 exports.getAllReviews = catchAsync(function _callee(req, res, next) {
-  var reviews;
+  var filter, reviews;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
-          return regeneratorRuntime.awrap(Review.find());
+          filter = {};
+          if (req.params.tourId) filter = {
+            tour: req.params.tourId
+          };
+          _context.next = 4;
+          return regeneratorRuntime.awrap(Review.find(filter));
 
-        case 2:
+        case 4:
           reviews = _context.sent;
           res.status(200).json({
             status: 'success',
@@ -25,7 +29,7 @@ exports.getAllReviews = catchAsync(function _callee(req, res, next) {
             }
           });
 
-        case 4:
+        case 6:
         case "end":
           return _context.stop();
       }
