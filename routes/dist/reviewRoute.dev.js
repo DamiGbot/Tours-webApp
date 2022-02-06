@@ -11,7 +11,9 @@ var _require2 = require('../controllers/reviewController'),
     getAllReviews = _require2.getAllReviews,
     createReview = _require2.createReview;
 
-var router = express.Router();
+var router = express.Router({
+  mergeParams: true
+});
 router.route('/').get(getAllReviews).post(protect, restrictTo('user'), createReview);
 router.route('/:id').get(getReview);
 module.exports = router;

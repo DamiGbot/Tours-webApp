@@ -6,26 +6,25 @@ var _require = require('../controllers/authController'),
     protect = _require.protect,
     restrictTo = _require.restrictTo;
 
-var _require2 = require('../controllers/reviewController'),
-    createReview = _require2.createReview;
+var reviewRouter = require('../routes/reviewRoute');
 
-var _require3 = require('../controllers/tourControllers'),
-    getAllTours = _require3.getAllTours,
-    getTour = _require3.getTour,
-    createTour = _require3.createTour,
-    updateTour = _require3.updateTour,
-    deleteTour = _require3.deleteTour,
-    aliasTopTours = _require3.aliasTopTours,
-    getTourStats = _require3.getTourStats,
-    getBusyMonth = _require3.getBusyMonth;
+var _require2 = require('../controllers/tourControllers'),
+    getAllTours = _require2.getAllTours,
+    getTour = _require2.getTour,
+    createTour = _require2.createTour,
+    updateTour = _require2.updateTour,
+    deleteTour = _require2.deleteTour,
+    aliasTopTours = _require2.aliasTopTours,
+    getTourStats = _require2.getTourStats,
+    getBusyMonth = _require2.getBusyMonth;
 
 var router = express.Router();
+router.use('/:tourId/reviews', reviewRouter);
 router.route('/tour-stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getBusyMonth);
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 router.route('/').get(protect, getAllTours).post(createTour);
 router.route('/:id').get(getTour).patch(updateTour)["delete"](protect, restrictTo('admin', 'lead-guide'), deleteTour);
-router.route('/:tourId/reviews').post(protect, restrictTo('user'), createReview);
 module.exports = {
   router: router
 };
