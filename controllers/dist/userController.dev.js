@@ -7,6 +7,9 @@ var AppError = require('../utils/appError');
 
 var catchAsync = require('../utils/catchAsync');
 
+var _require2 = require('./handleFactory'),
+    deleteOne = _require2.deleteOne;
+
 var filterObj = function filterObj(obj) {
   for (var _len = arguments.length, allowedFields = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     allowedFields[_key - 1] = arguments[_key];
@@ -67,13 +70,7 @@ var updateUser = function updateUser(req, res) {
   });
 };
 
-var deleteUser = function deleteUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined'
-  });
-};
-
+var deleteUser = deleteOne(User);
 var updateMe = catchAsync(function _callee2(req, res, next) {
   var filterBody, user;
   return regeneratorRuntime.async(function _callee2$(_context2) {

@@ -6,6 +6,9 @@ var catchAsync = require('../utils/catchAsync');
 
 var AppError = require('../utils/appError');
 
+var _require = require('./handleFactory'),
+    deleteOne = _require.deleteOne;
+
 exports.getAllReviews = catchAsync(function _callee(req, res, next) {
   var filter, reviews;
   return regeneratorRuntime.async(function _callee$(_context) {
@@ -98,3 +101,4 @@ exports.createReview = catchAsync(function _callee3(req, res, next) {
     }
   });
 });
+exports.deleteReview = deleteOne(Review);
