@@ -19,7 +19,8 @@ exports.getAll = function (Model) {
             if (req.params.tourId) filter = {
               tour: req.params.tourId
             };
-            features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields().paginate();
+            features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields().paginate(); // const doc = await features.query.explain();
+
             _context.next = 5;
             return regeneratorRuntime.awrap(features.query);
 
