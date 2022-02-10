@@ -17,6 +17,7 @@ var _require2 = require('../controllers/reviewController'),
 var router = express.Router({
   mergeParams: true
 });
-router.route('/').get(getAllReviews).post(protect, restrictTo('user'), setTourUserIds, createReview);
-router.route('/:id').get(getReview)["delete"](deleteReview).patch(updateReview);
+router.use(protect);
+router.route('/').get(getAllReviews).post(restrictTo('user'), setTourUserIds, createReview);
+router.route('/:id').get(getReview)["delete"](restrictTo('user', 'admin'), deleteReview).patch(restrictTo('user', 'admin'), updateReview);
 module.exports = router;
