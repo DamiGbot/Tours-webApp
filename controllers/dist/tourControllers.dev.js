@@ -11,7 +11,9 @@ var AppError = require('../utils/appError');
 var catchAsync = require('../utils/catchAsync');
 
 var _require3 = require('./handleFactory'),
-    deleteOne = _require3.deleteOne; // Aliasing
+    deleteOne = _require3.deleteOne,
+    updateOne = _require3.updateOne,
+    createOne = _require3.createOne; // Aliasing
 
 
 var aliasTopTours = function aliasTopTours(req, res, next) {
@@ -67,8 +69,7 @@ var getTour = catchAsync(function _callee2(req, res, next) {
         case 0:
           _context3.next = 2;
           return regeneratorRuntime.awrap(Tour.findById(req.params.id).populate({
-            path: 'reviews' // select: '-tour\\',
-
+            path: 'reviews'
           }));
 
         case 2:
@@ -96,86 +97,16 @@ var getTour = catchAsync(function _callee2(req, res, next) {
     }
   });
 });
-var createTour = catchAsync(function _callee3(req, res, next) {
-  var newTour;
+var createTour = createOne(Tour);
+var updateTour = updateOne(Tour);
+var deleteTour = deleteOne(Tour);
+var getTourStats = catchAsync(function _callee3(req, res, next) {
+  var stats;
   return regeneratorRuntime.async(function _callee3$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
           _context4.next = 2;
-          return regeneratorRuntime.awrap(Tour.create(req.body));
-
-        case 2:
-          newTour = _context4.sent;
-          res.status(201).json({
-            status: 'success',
-            data: {
-              tour: newTour
-            }
-          });
-
-        case 4:
-        case "end":
-          return _context4.stop();
-      }
-    }
-  });
-});
-var updateTour = catchAsync(function _callee4(req, res, next) {
-  var tour;
-  return regeneratorRuntime.async(function _callee4$(_context5) {
-    while (1) {
-      switch (_context5.prev = _context5.next) {
-        case 0:
-          _context5.next = 2;
-          return regeneratorRuntime.awrap(Tour.findByIdAndUpdate(req.params.id, req.body, {
-            "new": true,
-            runValidators: true
-          }));
-
-        case 2:
-          tour = _context5.sent;
-
-          if (tour) {
-            _context5.next = 5;
-            break;
-          }
-
-          return _context5.abrupt("return", next(new AppError('No tour found with that ID', 404)));
-
-        case 5:
-          res.status(200).json({
-            status: 'success',
-            data: {
-              tour: tour
-            }
-          });
-
-        case 6:
-        case "end":
-          return _context5.stop();
-      }
-    }
-  });
-}); // const deleteTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findByIdAndDelete(req.params.id);
-//   if (!tour) {
-//     return next(new AppError('No tour found with that ID', 404));
-//   }
-//   res.status(204).json({
-//     status: 'success',
-//     data: null,
-//   });
-// });
-
-var deleteTour = deleteOne(Tour);
-var getTourStats = catchAsync(function _callee5(req, res, next) {
-  var stats;
-  return regeneratorRuntime.async(function _callee5$(_context6) {
-    while (1) {
-      switch (_context6.prev = _context6.next) {
-        case 0:
-          _context6.next = 2;
           return regeneratorRuntime.awrap(Tour.aggregate([{
             $match: {
               ratingsAverage: {
@@ -214,7 +145,7 @@ var getTourStats = catchAsync(function _callee5(req, res, next) {
           ]));
 
         case 2:
-          stats = _context6.sent;
+          stats = _context4.sent;
           res.status(200).json({
             status: 'success',
             data: {
@@ -224,19 +155,19 @@ var getTourStats = catchAsync(function _callee5(req, res, next) {
 
         case 4:
         case "end":
-          return _context6.stop();
+          return _context4.stop();
       }
     }
   });
 });
-var getBusyMonth = catchAsync(function _callee6(req, res, next) {
+var getBusyMonth = catchAsync(function _callee4(req, res, next) {
   var year, plan;
-  return regeneratorRuntime.async(function _callee6$(_context7) {
+  return regeneratorRuntime.async(function _callee4$(_context5) {
     while (1) {
-      switch (_context7.prev = _context7.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
           year = +req.params.year;
-          _context7.next = 3;
+          _context5.next = 3;
           return regeneratorRuntime.awrap(Tour.aggregate([{
             $unwind: '$startDates'
           }, {
@@ -280,7 +211,7 @@ var getBusyMonth = catchAsync(function _callee6(req, res, next) {
           ]));
 
         case 3:
-          plan = _context7.sent;
+          plan = _context5.sent;
           res.status(200).json({
             status: 'success',
             result: plan.length,
@@ -291,7 +222,7 @@ var getBusyMonth = catchAsync(function _callee6(req, res, next) {
 
         case 5:
         case "end":
-          return _context7.stop();
+          return _context5.stop();
       }
     }
   });

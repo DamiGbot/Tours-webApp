@@ -1,7 +1,7 @@
 const { User } = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { deleteOne } = require('./handleFactory');
+const { deleteOne, updateOne, createOne } = require('./handleFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = new Object();
@@ -25,13 +25,6 @@ const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-const createdUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
-};
-
 const getUser = (req, res) => {
   res.status(500).json({
     status: 'error',
@@ -39,13 +32,8 @@ const getUser = (req, res) => {
   });
 };
 
-const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
-};
-
+const createdUser = createOne(User);
+const updateUser = updateOne(User);
 const deleteUser = deleteOne(User);
 
 const updateMe = catchAsync(async (req, res, next) => {

@@ -8,7 +8,9 @@ var AppError = require('../utils/appError');
 var catchAsync = require('../utils/catchAsync');
 
 var _require2 = require('./handleFactory'),
-    deleteOne = _require2.deleteOne;
+    deleteOne = _require2.deleteOne,
+    updateOne = _require2.updateOne,
+    createOne = _require2.createOne;
 
 var filterObj = function filterObj(obj) {
   for (var _len = arguments.length, allowedFields = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -49,13 +51,6 @@ var getAllUsers = catchAsync(function _callee(req, res, next) {
   });
 });
 
-var createdUser = function createdUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined'
-  });
-};
-
 var getUser = function getUser(req, res) {
   res.status(500).json({
     status: 'error',
@@ -63,13 +58,8 @@ var getUser = function getUser(req, res) {
   });
 };
 
-var updateUser = function updateUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined'
-  });
-};
-
+var createdUser = createOne(User);
+var updateUser = updateOne(User);
 var deleteUser = deleteOne(User);
 var updateMe = catchAsync(function _callee2(req, res, next) {
   var filterBody, user;

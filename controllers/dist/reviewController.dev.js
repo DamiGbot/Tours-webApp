@@ -7,7 +7,9 @@ var catchAsync = require('../utils/catchAsync');
 var AppError = require('../utils/appError');
 
 var _require = require('./handleFactory'),
-    deleteOne = _require.deleteOne;
+    deleteOne = _require.deleteOne,
+    updateOne = _require.updateOne,
+    createOne = _require.createOne;
 
 exports.getAllReviews = catchAsync(function _callee(req, res, next) {
   var filter, reviews;
@@ -73,32 +75,14 @@ exports.getReview = catchAsync(function _callee2(req, res, next) {
     }
   });
 });
-exports.createReview = catchAsync(function _callee3(req, res, next) {
-  var newReview;
-  return regeneratorRuntime.async(function _callee3$(_context3) {
-    while (1) {
-      switch (_context3.prev = _context3.next) {
-        case 0:
-          // Allow nested routes
-          if (!req.body.tour) req.body.tour = req.params.tourId;
-          if (!req.body.user) req.body.user = req.user.id;
-          _context3.next = 4;
-          return regeneratorRuntime.awrap(Review.create(req.body));
 
-        case 4:
-          newReview = _context3.sent;
-          res.status(201).json({
-            status: 'success',
-            data: {
-              newReview: newReview
-            }
-          });
+exports.setTourUserIds = function (req, res, next) {
+  // Allow nested routes
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
 
-        case 6:
-        case "end":
-          return _context3.stop();
-      }
-    }
-  });
-});
+exports.createReview = createOne(Review);
+exports.updateReview = updateOne(Review);
 exports.deleteReview = deleteOne(Review);
