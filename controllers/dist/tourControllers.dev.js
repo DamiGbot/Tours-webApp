@@ -1,19 +1,17 @@
 "use strict";
 
 var _require = require('../models/tourModel'),
-    Tour = _require.Tour;
+    Tour = _require.Tour; // const AppError = require('../utils/appError');
 
-var _require2 = require('../utils/apiFeatures'),
-    APIFeatures = _require2.APIFeatures;
-
-var AppError = require('../utils/appError');
 
 var catchAsync = require('../utils/catchAsync');
 
-var _require3 = require('./handleFactory'),
-    deleteOne = _require3.deleteOne,
-    updateOne = _require3.updateOne,
-    createOne = _require3.createOne; // Aliasing
+var _require2 = require('./handleFactory'),
+    deleteOne = _require2.deleteOne,
+    updateOne = _require2.updateOne,
+    createOne = _require2.createOne,
+    getOne = _require2.getOne,
+    getAll = _require2.getAll; // Aliasing
 
 
 var aliasTopTours = function aliasTopTours(req, res, next) {
@@ -34,79 +32,13 @@ var aliasTopTours = function aliasTopTours(req, res, next) {
   });
 };
 
-var getAllTours = catchAsync(function _callee(req, res, next) {
-  var features, tours;
+var getTourStats = catchAsync(function _callee(req, res, next) {
+  var stats;
   return regeneratorRuntime.async(function _callee$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
-          _context2.next = 3;
-          return regeneratorRuntime.awrap(features.query);
-
-        case 3:
-          tours = _context2.sent;
-          res.status(200).json({
-            status: 'success',
-            results: tours.length,
-            data: {
-              tours: tours
-            }
-          });
-
-        case 5:
-        case "end":
-          return _context2.stop();
-      }
-    }
-  });
-});
-var getTour = catchAsync(function _callee2(req, res, next) {
-  var tour;
-  return regeneratorRuntime.async(function _callee2$(_context3) {
-    while (1) {
-      switch (_context3.prev = _context3.next) {
-        case 0:
-          _context3.next = 2;
-          return regeneratorRuntime.awrap(Tour.findById(req.params.id).populate({
-            path: 'reviews'
-          }));
-
-        case 2:
-          tour = _context3.sent;
-
-          if (tour) {
-            _context3.next = 5;
-            break;
-          }
-
-          return _context3.abrupt("return", next(new AppError('No tour found with that ID', 404)));
-
-        case 5:
-          res.status(200).json({
-            status: 'success',
-            data: {
-              tour: tour
-            }
-          });
-
-        case 6:
-        case "end":
-          return _context3.stop();
-      }
-    }
-  });
-});
-var createTour = createOne(Tour);
-var updateTour = updateOne(Tour);
-var deleteTour = deleteOne(Tour);
-var getTourStats = catchAsync(function _callee3(req, res, next) {
-  var stats;
-  return regeneratorRuntime.async(function _callee3$(_context4) {
-    while (1) {
-      switch (_context4.prev = _context4.next) {
-        case 0:
-          _context4.next = 2;
+          _context2.next = 2;
           return regeneratorRuntime.awrap(Tour.aggregate([{
             $match: {
               ratingsAverage: {
@@ -145,7 +77,7 @@ var getTourStats = catchAsync(function _callee3(req, res, next) {
           ]));
 
         case 2:
-          stats = _context4.sent;
+          stats = _context2.sent;
           res.status(200).json({
             status: 'success',
             data: {
@@ -155,19 +87,19 @@ var getTourStats = catchAsync(function _callee3(req, res, next) {
 
         case 4:
         case "end":
-          return _context4.stop();
+          return _context2.stop();
       }
     }
   });
 });
-var getBusyMonth = catchAsync(function _callee4(req, res, next) {
+var getBusyMonth = catchAsync(function _callee2(req, res, next) {
   var year, plan;
-  return regeneratorRuntime.async(function _callee4$(_context5) {
+  return regeneratorRuntime.async(function _callee2$(_context3) {
     while (1) {
-      switch (_context5.prev = _context5.next) {
+      switch (_context3.prev = _context3.next) {
         case 0:
           year = +req.params.year;
-          _context5.next = 3;
+          _context3.next = 3;
           return regeneratorRuntime.awrap(Tour.aggregate([{
             $unwind: '$startDates'
           }, {
@@ -211,7 +143,7 @@ var getBusyMonth = catchAsync(function _callee4(req, res, next) {
           ]));
 
         case 3:
-          plan = _context5.sent;
+          plan = _context3.sent;
           res.status(200).json({
             status: 'success',
             result: plan.length,
@@ -222,11 +154,18 @@ var getBusyMonth = catchAsync(function _callee4(req, res, next) {
 
         case 5:
         case "end":
-          return _context5.stop();
+          return _context3.stop();
       }
     }
   });
 });
+var getAllTours = getAll(Tour);
+var getTour = getOne(Tour, {
+  path: 'reviews'
+});
+var createTour = createOne(Tour);
+var updateTour = updateOne(Tour);
+var deleteTour = deleteOne(Tour);
 module.exports = {
   getAllTours: getAllTours,
   getTour: getTour,
