@@ -11,6 +11,11 @@ var mongoose = require('mongoose');
 var _require = require('../../models/tourModel'),
     Tour = _require.Tour;
 
+var _require2 = require('../../models/userModel'),
+    User = _require2.User;
+
+var Review = require('../../models/reviewModel');
+
 dotenv.config({
   path: '../../config/.env'
 });
@@ -49,7 +54,9 @@ var main = function main() {
 };
 
 main();
+var reviews = JSON.parse(fs.readFileSync(path.resolve('reviews.json'), 'utf-8'));
 var tours = JSON.parse(fs.readFileSync(path.resolve('tours.json'), 'utf-8'));
+var users = JSON.parse(fs.readFileSync(path.resolve('users.json'), 'utf-8'));
 
 var importData = function importData() {
   return regeneratorRuntime.async(function importData$(_context2) {
@@ -58,25 +65,35 @@ var importData = function importData() {
         case 0:
           _context2.prev = 0;
           _context2.next = 3;
-          return regeneratorRuntime.awrap(Tour.create(tours));
+          return regeneratorRuntime.awrap(Review.create(reviews));
 
         case 3:
-          console.log('Data successfully loaded!');
-          process.exit();
-          _context2.next = 10;
-          break;
+          _context2.next = 5;
+          return regeneratorRuntime.awrap(Tour.create(tours));
+
+        case 5:
+          _context2.next = 7;
+          return regeneratorRuntime.awrap(User.create(users, {
+            validateBeforeSave: false
+          }));
 
         case 7:
-          _context2.prev = 7;
+          console.log('Data successfully loaded!');
+          process.exit();
+          _context2.next = 14;
+          break;
+
+        case 11:
+          _context2.prev = 11;
           _context2.t0 = _context2["catch"](0);
           console.log(_context2.t0);
 
-        case 10:
+        case 14:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[0, 7]]);
+  }, null, null, [[0, 11]]);
 };
 
 var deleteData = function deleteData() {
@@ -86,25 +103,33 @@ var deleteData = function deleteData() {
         case 0:
           _context3.prev = 0;
           _context3.next = 3;
-          return regeneratorRuntime.awrap(Tour.deleteMany());
+          return regeneratorRuntime.awrap(Review.deleteMany());
 
         case 3:
-          console.log('Data successfully deleted!');
-          process.exit();
-          _context3.next = 10;
-          break;
+          _context3.next = 5;
+          return regeneratorRuntime.awrap(Tour.deleteMany());
+
+        case 5:
+          _context3.next = 7;
+          return regeneratorRuntime.awrap(User.deleteMany());
 
         case 7:
-          _context3.prev = 7;
+          console.log('Data successfully deleted!');
+          process.exit();
+          _context3.next = 14;
+          break;
+
+        case 11:
+          _context3.prev = 11;
           _context3.t0 = _context3["catch"](0);
           console.log(_context3.t0);
 
-        case 10:
+        case 14:
         case "end":
           return _context3.stop();
       }
     }
-  }, null, null, [[0, 7]]);
+  }, null, null, [[0, 11]]);
 };
 
 if (process.argv[2] === '--import') {
