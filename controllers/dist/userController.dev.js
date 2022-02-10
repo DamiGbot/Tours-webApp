@@ -32,6 +32,11 @@ var createdUser = function createdUser(req, res) {
   });
 };
 
+var getMe = function getMe(req, res, next) {
+  req.params.id = req.user.id;
+  next();
+};
+
 var updateMe = catchAsync(function _callee(req, res, next) {
   var filterBody, user;
   return regeneratorRuntime.async(function _callee$(_context) {
@@ -104,5 +109,6 @@ module.exports = {
   updateUser: updateUser,
   deleteUser: deleteUser,
   updateMe: updateMe,
-  deleteMe: deleteMe
+  deleteMe: deleteMe,
+  getMe: getMe
 };

@@ -17,7 +17,8 @@ var _require2 = require('../controllers/userController'),
     updateUser = _require2.updateUser,
     deleteUser = _require2.deleteUser,
     updateMe = _require2.updateMe,
-    deleteMe = _require2.deleteMe;
+    deleteMe = _require2.deleteMe,
+    getMe = _require2.getMe;
 
 var router = express.Router(); // user login, reset password, signup
 
@@ -26,6 +27,7 @@ router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateMyPassword', protect, updatePassword);
+router.get('/me', protect, getMe, getUser);
 router.patch('/updateMe', protect, updateMe);
 router["delete"]('/deleteMe', protect, deleteMe); // Administrator route
 
